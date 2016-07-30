@@ -4,8 +4,8 @@
 Treehouse Video Downloader downloads videos from the specified [Treehouse links](http://www.treehouseteam.com).
 
 ## Dependencies
-- youtube-dl
-- BeautifulSoup 4
+- [youtube-dl](https://rg3.github.io/youtube-dl/)
+- [BeautifulSoup 4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 
 ## Usage
 To use it change the **USERNAME** and **PASSWORD** variables in `main.py` file and define
