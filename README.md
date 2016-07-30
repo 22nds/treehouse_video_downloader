@@ -1,7 +1,7 @@
 # Treehouse video downloader
 
 ## Summary
-Treehouse Video Downloader downloads videos from the specified [Treehouse links](http://www.treehouseteam.com).
+Treehouse Video Downloader downloads videos from the specified [Treehouse links](http://www.teamtreehouse.com).
 
 ## Dependencies
 - [youtube-dl](https://rg3.github.io/youtube-dl/)
