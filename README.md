@@ -13,7 +13,7 @@ the **links** you would like to download in the `links.txt` file. Example list o
 
 If the **download of the video fails**, the link will be saved in `log.txt`.
 
-##Notes
+## Notes
 Because youtube-dl login does not work for proper authentication of the Treehouse user I have used python 'requests' module to get the correct video link.
 
 Hopefully youtube-dl will be extended to cover Treehouse soon. Here is the [issue](https://github.com/rg3/youtube-dl/issues/9836).
