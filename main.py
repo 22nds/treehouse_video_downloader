@@ -45,7 +45,7 @@ def move_to_course_directory(title):
 
 
 def getID(link):
-    """Go to the web page with the video and extract it's ID
+    """Go to the web page with the video and extract its ID
     """
     html = requests.get(link)
     soup = BeautifulSoup(html.text, "html.parser")
@@ -56,7 +56,7 @@ def getID(link):
 
 
 def getSubtitles(id, name):
-    """ Download and rename subtitle to match the downloaded videos
+    """ Download and rename subtitle file to match the downloaded videos.
     Subtitle is located at https://teamtreehouse.com/videos/{id}}/captions
     """
     subtitlesLink = 'https://teamtreehouse.com/videos/{}/captions'.format(id)
@@ -79,7 +79,7 @@ def getLinksCourse(link):
     html = requests.get(linkToStages)
     soup = BeautifulSoup(html.text, "html.parser")
 
-    # find all urls of the videos (ignore reviews and questions)
+    # Find all urls of the videos (ignore reviews and questions)
     videos = []
     for a in soup.select('a[href^="/library/"]'):
         if (a.select('.video-22-icon')):  # if video icon is there
@@ -95,7 +95,7 @@ def getLinksWorkshop(link):
     html = requests.get(link)
     soup = BeautifulSoup(html.text, "html.parser")
 
-    # find all urls of the videos
+    # Find all urls of the videos
     videos = []
     for a in soup.select('li.workshop-video a[href^="/library/"]'):
         vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
@@ -109,7 +109,7 @@ def getLinkWorkshop(link):
     html = requests.get(link)
     soup = BeautifulSoup(html.text, "html.parser")
 
-    # find all urls of the videos
+    # Find all urls of the videos
     videos = []
     for a in soup.select('a#workshop-hero'):
         vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
@@ -125,7 +125,7 @@ for link in open('links.txt'):
         videos = getLinksWorkshop(link) or getLinkWorkshop(link) or getLinksCourse(
             link)
 
-        # generate folder name and move to it
+        # Generate folder name and move to it
         parts = link.split('/')
         title = parts[-1]
         move_to_course_directory(title)
@@ -147,8 +147,8 @@ for link in open('links.txt'):
 
             # Youtube-dl options
             options = {
-                'outtmpl': output,
-                'verbose': True
+                'outtmpl': output
+                # ,'verbose': True
             }
 
             with youtube_dl.YoutubeDL(options) as ydl:
