@@ -1,9 +1,14 @@
 """
 Treehouse Video Downloader downloads videos from
-the specified Treehouseteam.com video links.
+the specified Treehouseteam.com courses and workshops.
 
 To use it change the username and password and define
-the link you would like to download in the links.txt file.
+the course/workshop you would like to download in the
+links.txt file.
+
+If you would like to download the **subtitles** of the
+videos set `SUBTITLES = True`. They are not downloaded
+by default.
 
 If download fails, the link will be saved in log.txt
 """
