@@ -13,9 +13,9 @@ by default.
 If download fails, the link will be saved in log.txt
 """
 
-import requests
 import os
 import re
+import requests
 
 from bs4 import BeautifulSoup
 import youtube_dl
@@ -23,8 +23,9 @@ import youtube_dl
 USERNAME = 'your_username'
 PASSWORD = 'your_password'
 
-# Download subtitles of the videos
+# Download subtitles of the videos - use True to download subtitles
 SUBTITLES = False
+
 HOME_DIR = os.getcwd()
 
 
@@ -60,6 +61,12 @@ def getID(link):
         return id
 
 
+def removeReservedChars(value):
+    """ Remove reserved characters because of Windows OS compatibility
+    """
+    return "".join(i for i in value if i not in r'\/:*?"<>|')
+
+
 def getSubtitles(id, name):
     """ Download and rename subtitle file to match the downloaded videos.
     Subtitle is located at https://teamtreehouse.com/videos/{id}}/captions
@@ -69,7 +76,8 @@ def getSubtitles(id, name):
     if response.status_code == 200:
         contentDisposition = response.headers['Content-Disposition']
         parts = contentDisposition.split('"')
-        title = '{}-{}'.format(name, parts[-2])
+        filename = removeReservedChars(parts[-2])
+        title = '{}-{}'.format(name, filename)
         content = response.text
         with open(title, 'w') as f:
             f.write(content)
@@ -90,7 +98,6 @@ def getLinksCourse(link):
         if (a.select('.video-22-icon')):  # if video icon is there
             videoLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
             videos.append(videoLink)
-    print(videos)
     return videos
 
 
@@ -144,7 +151,7 @@ for link in open('links.txt'):
             h1 = soup.h1.contents[0]
 
             # Output with the title of the video
-            output = u'%(id)s-' + h1 + u'.%(ext)s'
+            output = u'%(id)s-' + removeReservedChars(h1) + u'.%(ext)s'
 
             # Video source link
             tag = soup.video
