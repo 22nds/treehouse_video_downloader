@@ -5,8 +5,18 @@ Treehouse Video Downloader downloads videos (with optional subtitles) from the s
 
 ## Dependencies
 Install these dependencies:
+- [requests](http://docs.python-requests.org/en/master/)
+```
+pip install requests
+```
 - [youtube-dl](https://rg3.github.io/youtube-dl/)
+```
+pip install youtube_dl
+```
 - [BeautifulSoup 4](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
+```
+pip install beautifulsoup4
+```
 
 ## Usage
 Before usage you need to
@@ -16,6 +26,8 @@ Before usage you need to
 If you would like to download the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
 
 If the **download of the video fails**, the course URL will be saved in `log.txt`.
+
+If you would like to download only subititles set `SUBTITLES = True` and comment out the line that downloads the video `# ydl.download([videolink])`.
 
 ## Notes
 Because youtube-dl login does not work for proper authentication of the Treehouse user I have used python 'requests' module to get the correct video link.
