@@ -34,9 +34,9 @@ If the **download of the video fails**, the course URL will be saved in `log.txt
 
 ## Subtitles
 
-If you would like to download:
-- the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
-- ONLY subititles and not the videos set `SUBTITLES = True` and comment out the line that downloads the video
+If you would like to:
+- download the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
+- download ONLY subititles and not the videos set `SUBTITLES = True` and comment out the line that downloads the video
 ```
 # ydl.download([videolink])
 ```
@@ -44,6 +44,21 @@ If you would like to download:
 ## Downloader
 
 Default downloader is `aria2c`. If you wish to change it, edit `EXTERNAL_DL = 'aria2c'`
+
+## Additional options
+
+You can extend the script by adding options in the `options` variable:
+```
+options = {
+    'outtmpl': output,
+    'external_downloader': EXTERNAL_DL
+    # ,'verbose': True
+}
+```
+
+Here is the list of all options (however not all of them work): https://github.com/rg3/youtube-dl/blob/master/youtube_dl/YoutubeDL.py#L129-L290
+
+Feel free to experiment and test.
 
 ## Notes
 Because youtube-dl login does not work for proper authentication of the Treehouse user I have used python 'requests' module to get the correct video link.
