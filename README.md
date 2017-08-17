@@ -50,4 +50,6 @@ Because youtube-dl login does not work for proper authentication of the Treehous
 
 Hopefully youtube-dl will be extended to cover Treehouse soon. Here is the [issue](https://github.com/rg3/youtube-dl/issues/9836).
 
-Script was tested with the `youtube-dl 2017.07.30.1` and `python 3.5.3`.
+You can upgrade `youtube-dl` with `sudo youtube-dl -U`
+
+Script was tested with the `youtube-dl 2017.08.13` and `python 3.5.3`.
