@@ -37,7 +37,9 @@ If the **download of the video fails**, the course URL will be saved in `log.txt
 If you would like to download:
 - the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
 - ONLY subititles and not the videos set `SUBTITLES = True` and comment out the line that downloads the video
-```# ydl.download([videolink])```
+```
+# ydl.download([videolink])
+```
 
 ## Downloader
 
