@@ -23,8 +23,11 @@ import youtube_dl
 USERNAME = 'your_username'
 PASSWORD = 'your_password'
 
-# Download subtitles of the videos - use True to download subtitles
+# Download subtitles of the videos - use 'True' to download subtitles
 SUBTITLES = False
+
+# Download accelerator
+EXTERNAL_DL = 'aria2c'
 
 HOME_DIR = os.getcwd()
 
@@ -159,7 +162,8 @@ for link in open('links.txt'):
 
             # Youtube-dl options
             options = {
-                'outtmpl': output
+                'outtmpl': output,
+                'external_downloader': EXTERNAL_DL
                 # ,'verbose': True
             }
 
