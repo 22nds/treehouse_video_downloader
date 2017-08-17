@@ -22,8 +22,8 @@ pip install beautifulsoup4
 
 1. Add your credentials to `main.py` file
 ```
-# USERNAME = 'your_username'
-# PASSWORD = 'your_password'
+USERNAME = 'your_username'
+PASSWORD = 'your_password'
 ```
 2. define the **courses/workshops** you would like to download in the `links.txt` file. Example list of the courses/workshops is already in the file.
 3. Go to file directory where `main.py` and `links.txt` are saved and run `main.py` from the terminal with:
@@ -34,12 +34,13 @@ If the **download of the video fails**, the course URL will be saved in `log.txt
 
 ## Subtitles
 
-If you would like to download the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
-If you would like to download ONLY subititles set `SUBTITLES = True` and comment out the line that downloads the video `# ydl.download([videolink])`.
+If you would like to download:
+- the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
+- ONLY subititles and not the videos set `SUBTITLES = True` and comment out the line that downloads the video `# ydl.download([videolink])`.
 
 ## Downloader
 
-Default downloader is `aria2c`. If you wish to change it edit `EXTERNAL_DL = 'aria2c'`
+Default downloader is `aria2c`. If you wish to change it, edit `EXTERNAL_DL = 'aria2c'`
 
 ## Notes
 Because youtube-dl login does not work for proper authentication of the Treehouse user I have used python 'requests' module to get the correct video link.
