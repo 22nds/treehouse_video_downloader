@@ -26,13 +26,13 @@ USERNAME = 'your_username'
 PASSWORD = 'your_password'
 ```
 2. define the **courses/workshops** you would like to download in the `links.txt` file. Example list of the courses/workshops is already in the file.
-3. Go to file directory where `main.py` and `links.txt` are saved and run `main.py` from the terminal with:
-```python main.py```
+3. Go to file directory where `main.py` and `links.txt` are saved and run `main.py` from the terminal with: `python main.py`
 4. Wait until all videos are downloaded and have fun watching them.
 
 If the **download of the video fails**, the course URL will be saved in `log.txt`.
 
-## Subtitles
+## Options
+### Subtitles
 
 If you would like to:
 - download the **subtitles** of the videos set `SUBTITLES = True`. They are not downloaded by default.
@@ -41,11 +41,15 @@ If you would like to:
 # ydl.download([videolink])
 ```
 
-## Downloader
+### Video format
+The default video format is mp4, but you can
+also get webm files, just change `VIDEO_FORMAT = 'webm'` in the `main.py` script.
+
+### Downloader
 
 Default downloader is `aria2c`. If you wish to change it, edit `EXTERNAL_DL = 'aria2c'`
 
-## Additional options
+### Additional options
 
 You can extend the script by adding options in the `options` variable:
 ```

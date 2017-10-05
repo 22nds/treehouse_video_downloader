@@ -2,11 +2,14 @@
 Treehouse Video Downloader downloads videos from
 the specified Treehouseteam.com courses and workshops.
 
-To use it change the username and password and define
-the course/workshop you would like to download in the
-links.txt file.
+To use it change the username and password in this file
+and define the course/workshop you would like to download
+in the links.txt file.
 
-If you would like to download the **subtitles** of the
+You can change the format - default is mp4, but you can
+also get webm, just change VIDEO_FORMAT = 'webm' below.
+
+If you would like to download the subtitles of the
 videos set `SUBTITLES = True`. They are not downloaded
 by default.
 
@@ -28,6 +31,9 @@ SUBTITLES = False
 
 # Download accelerator
 EXTERNAL_DL = 'aria2c'
+
+# Video format - webm or mp4
+VIDEO_FORMAT = 'mp4'
 
 HOME_DIR = os.getcwd()
 
@@ -87,6 +93,16 @@ def getSubtitles(id, name):
         return 0
 
 
+def getVideoFormat():
+    """ Validate video format or return default format
+    """
+    default = 'mp4'
+    if (VIDEO_FORMAT == 'mp4' or VIDEO_FORMAT == 'webm'):
+        return VIDEO_FORMAT
+    else:
+        return default
+
+
 def getLinksCourse(link):
     """ Get the content of stages and extract the links to videos
     """
@@ -137,8 +153,8 @@ for link in open('links.txt'):
         link = link.strip()
         print('Downloading: {}'.format(link))
 
-        videos = getLinksWorkshop(link) or getLinkWorkshop(link) or getLinksCourse(
-            link)
+        videos = getLinksWorkshop(link) or getLinkWorkshop(
+            link) or getLinksCourse(link)
 
         # Generate folder name and move to it
         parts = link.split('/')
@@ -158,7 +174,8 @@ for link in open('links.txt'):
 
             # Video source link
             tag = soup.video
-            videolink = tag.source['src']
+            videolink = tag.find_all(
+                type="video/{}".format(getVideoFormat()))[0].get('src')
 
             # Youtube-dl options
             options = {
