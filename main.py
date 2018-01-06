@@ -33,7 +33,7 @@ SUBTITLES = False
 EXTERNAL_DL = 'aria2c'
 
 # Video format - webm or mp4
-VIDEO_FORMAT = 'mp4'
+VIDEO_FORMAT = 'webm'
 
 HOME_DIR = os.getcwd()
 

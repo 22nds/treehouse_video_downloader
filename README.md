@@ -4,7 +4,11 @@
 Treehouse Video Downloader downloads videos (with optional subtitles) from the specified [Treehouse courses and workshops](http://www.teamtreehouse.com).
 
 ## Dependencies
-Install these dependencies:
+Install all dependencies:
+```
+pip install -r requirements.txt
+```
+or install them separately
 - [requests](http://docs.python-requests.org/en/master/)
 ```
 pip install requests
@@ -42,8 +46,10 @@ If you would like to:
 ```
 
 ### Video format
-The default video format is mp4, but you can
-also get webm files, just change `VIDEO_FORMAT = 'webm'` in the `main.py` script.
+The default video format is webm, but you can
+also get mp4 files, just change `VIDEO_FORMAT = 'mp4'` in the `main.py` script.
+
+One of the users noticed mp4 video format downloads only 30 sec clips so test it to make sure mp4 format is available for a particular course. 
 
 ### Downloader
 
@@ -69,6 +75,6 @@ Because youtube-dl login does not work for proper authentication of the Treehous
 
 Hopefully youtube-dl will be extended to cover Treehouse soon. Here is the [issue](https://github.com/rg3/youtube-dl/issues/9836).
 
-You can upgrade `youtube-dl` with `sudo youtube-dl -U`
+You can upgrade `youtube-dl` with `sudo -H pip install --upgrade youtube-dl`
 
-Script was tested with the `youtube-dl 2017.08.13` and `python 3.5.3`.
+Script was tested with the `youtube-dl 2017.10.01` and `python 3.5.3`.
