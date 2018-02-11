@@ -78,3 +78,6 @@ Hopefully youtube-dl will be extended to cover Treehouse soon. Here is the [issu
 You can upgrade `youtube-dl` with `sudo -H pip install --upgrade youtube-dl`
 
 Script was tested with the `youtube-dl 2017.10.01` and `python 3.5.3`.
+
+## Errors
+- When facing error `ImportError: cannot import name 'HTMLParseError` it means that you should upgrade BeautifulSoup to be compatible with Python 3.5, run `pip install --upgrade beautifulsoup4`.
