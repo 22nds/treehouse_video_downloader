@@ -77,4 +77,4 @@ Hopefully youtube-dl will be extended to cover Treehouse soon. Here is the [issu
 
 You can upgrade `youtube-dl` with `sudo -H pip install --upgrade youtube-dl`
 
-Script was tested with the `youtube-dl 2017.10.01` and `python 3.5.3`.
+Script was tested with the `youtube-dl 2017.12.14` and `Python 3.6.4`.
