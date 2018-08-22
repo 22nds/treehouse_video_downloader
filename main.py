@@ -37,6 +37,9 @@ VIDEO_FORMAT = 'webm'
 
 HOME_DIR = os.getcwd()
 
+# ProjectFile size limit (in MB)
+FILESIZE_LIMIT = 100
+
 
 def move_to_course_directory(title):
     """Check if current directory is home directory. If not, change to it.
@@ -147,6 +150,23 @@ def getLinkWorkshop(link):
         videos.append(vidLink)
     return videos
 
+def download_project_file(soup, downloaded_zips):
+    """Download project file"""
+
+    zip_files = soup.select('a[href$=".zip"]')
+    if zip_files:
+        project_zip = zip_files[0].get('href')
+        if not project_zip in downloaded_zips:
+            downloaded_zips.append(project_zip)
+            filesize = requests.head(project_zip).headers['Content-Length']
+            if int(filesize)/(1024*1024) > FILESIZE_LIMIT:
+                print('{} is too large.'.format(project_zip))
+                return
+            filename = re.search('[^/]+zip$', project_zip).group()
+            print('== getting zip: {} =='.format(filename))
+            req = requests.get(project_zip)
+            with open(filename, "wb") as zp:
+                zp.write(req.content)
 
 for link in open('links.txt'):
     try:
@@ -160,6 +180,7 @@ for link in open('links.txt'):
         parts = link.split('/')
         title = parts[-1]
         move_to_course_directory(title)
+        downloaded_zips = []
 
         for video in videos:
 
@@ -193,6 +214,8 @@ for link in open('links.txt'):
                     info = ydl.extract_info(videolink, download=False)
                     name = info.get('title', None)
                     subs = getSubtitles(ID, name)
+
+            download_project_file(soup, downloaded_zips)
 
     except:
         os.chdir(HOME_DIR)
