@@ -158,7 +158,7 @@ def download_project_file(soup, downloaded_zips):
         project_zip = zip_files[0].get('href')
         if not project_zip in downloaded_zips:
             downloaded_zips.append(project_zip)
-            filesize = requests.head(project_zip).headers['Content-Length']
+            filesize = requests.head(project_zip).headers.get('Content-Length', 0)
             if int(filesize)/(1024*1024) > FILESIZE_LIMIT:
                 print('{} is too large.'.format(project_zip))
                 return
@@ -168,7 +168,24 @@ def download_project_file(soup, downloaded_zips):
             with open(filename, "wb") as zp:
                 zp.write(req.content)
 
-for link in open('links.txt'):
+def write_to_file(filename):
+    os.chdir(HOME_DIR)
+    file_ = open(filename, 'a')
+    file_.write(link)
+    file_.write('\n')
+    file_.close()
+
+
+downloaded = set()
+with open('downloaded.txt') as f:
+    [downloaded.add(line.strip()) for line in f]
+links = set()
+with open('links.txt') as f:
+    [links.add(line.strip()) for line in f]
+links = links - downloaded
+print('=== {} item(s) ==='.format(len(links)))
+
+for link in links:
     try:
         link = link.strip()
         print('Downloading: {}'.format(link))
@@ -216,10 +233,7 @@ for link in open('links.txt'):
                     subs = getSubtitles(ID, name)
 
             download_project_file(soup, downloaded_zips)
-
-    except:
-        os.chdir(HOME_DIR)
-        log = open('log.txt', 'a')
-        log.write(link)
-        log.write('\n')
-        log.close()
+        write_to_file('downloaded.txt')
+    except Exception as e:
+        print(str(e))
+        write_to_file('log.txt')
