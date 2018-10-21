@@ -37,6 +37,9 @@ VIDEO_FORMAT = 'webm'
 
 HOME_DIR = os.getcwd()
 
+# ProjectFile size limit (in MB)
+FILESIZE_LIMIT = 100
+
 
 def move_to_course_directory(title):
     """Check if current directory is home directory. If not, change to it.
@@ -147,8 +150,42 @@ def getLinkWorkshop(link):
         videos.append(vidLink)
     return videos
 
+def download_project_file(soup, downloaded_zips):
+    """Download project file"""
 
-for link in open('links.txt'):
+    zip_files = soup.select('a[href$=".zip"]')
+    if zip_files:
+        project_zip = zip_files[0].get('href')
+        if not project_zip in downloaded_zips:
+            downloaded_zips.append(project_zip)
+            filesize = requests.head(project_zip).headers.get('Content-Length', 0)
+            if int(filesize)/(1024*1024) > FILESIZE_LIMIT:
+                print('{} is too large.'.format(project_zip))
+                return
+            filename = re.search('[^/]+zip$', project_zip).group()
+            print('== getting zip: {} =='.format(filename))
+            req = requests.get(project_zip)
+            with open(filename, "wb") as zp:
+                zp.write(req.content)
+
+def write_to_file(filename):
+    os.chdir(HOME_DIR)
+    file_ = open(filename, 'a')
+    file_.write(link)
+    file_.write('\n')
+    file_.close()
+
+
+downloaded = set()
+with open('downloaded.txt') as f:
+    [downloaded.add(line.strip()) for line in f]
+links = set()
+with open('links.txt') as f:
+    [links.add(line.strip()) for line in f]
+links = links - downloaded
+print('=== {} item(s) ==='.format(len(links)))
+
+for link in links:
     try:
         link = link.strip()
         print('Downloading: {}'.format(link))
@@ -160,6 +197,7 @@ for link in open('links.txt'):
         parts = link.split('/')
         title = parts[-1]
         move_to_course_directory(title)
+        downloaded_zips = []
 
         for video in videos:
 
@@ -194,9 +232,8 @@ for link in open('links.txt'):
                     name = info.get('title', None)
                     subs = getSubtitles(ID, name)
 
-    except:
-        os.chdir(HOME_DIR)
-        log = open('log.txt', 'a')
-        log.write(link)
-        log.write('\n')
-        log.close()
+            download_project_file(soup, downloaded_zips)
+        write_to_file('downloaded.txt')
+    except Exception as e:
+        print(str(e))
+        write_to_file('log.txt')
