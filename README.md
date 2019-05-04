@@ -3,6 +3,7 @@
 ## Summary
 Treehouse Video Downloader downloads videos (with optional subtitles) from the specified [Treehouse courses and workshops](http://www.teamtreehouse.com).
 
+
 ## Dependencies
 Install all dependencies:
 ```
@@ -71,10 +72,9 @@ Here is the list of all options (however not all of them work): https://github.c
 Feel free to experiment and test.
 
 ## Notes
-Because youtube-dl login does not work for proper authentication of the Treehouse user I have used python 'requests' module to get the correct video link.
-
-Hopefully youtube-dl will be extended to cover Treehouse soon. Here is the [issue](https://github.com/rg3/youtube-dl/issues/9836).
 
 You can upgrade `youtube-dl` with `sudo -H pip install --upgrade youtube-dl`
 
-Script was tested with the `youtube-dl 2017.10.01` and `python 3.5.3`.
+Upgraded on 4 May with 2 functions from project https://github.com/dx0x58/Treehouse-dl
+
+Script was tested with the `youtube-dl 2019.4.30` and `Python 3.6.7`.

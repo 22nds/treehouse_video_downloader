@@ -37,6 +37,44 @@ VIDEO_FORMAT = 'webm'
 
 HOME_DIR = os.getcwd()
 
+def do_auth(user, pwd):
+    """Login using username and password, returns logged in session
+    Source: https://github.com/dx0x58/Treehouse-dl
+    """
+    sess = requests.Session()
+
+    login_page = sess.get('https://teamtreehouse.com/signin')
+    login_page_soup = BeautifulSoup(login_page.text, "html.parser")
+    
+    token_val = login_page_soup.find('input', {'name': 'authenticity_token'}).get('value')
+    utf_val = login_page_soup.find('input', {'name': 'utf8'}).get('value')
+    
+    post_data = {'user_session[email]': user, 'user_session[password]': pwd, 'utf8': utf_val,
+                 'authenticity_token': token_val}
+
+    profile_page = sess.post('https://teamtreehouse.com/person_session', data=post_data)
+    
+    profile_page_soup = BeautifulSoup(profile_page.text, "html.parser")
+    auth_sign = profile_page_soup.title.text
+    if auth_sign:
+        if auth_sign.lower().find('home') != -1:
+            print('[!] Login success!')
+        else:
+            print('[!!] Not found login attribute\nExit...')
+            sys.exit(0)
+    else:
+        raise Exception('Login failed!')
+
+    return sess
+
+
+def http_get(url): 
+    """Returns text of url
+    Source: https://github.com/dx0x58/Treehouse-dl
+    """
+    resp = sess.get(url)
+    return resp.text
+
 
 def move_to_course_directory(title):
     """Check if current directory is home directory. If not, change to it.
@@ -62,12 +100,11 @@ def move_to_course_directory(title):
 def getID(link):
     """Go to the web page with the video and extract its ID
     """
-    html = requests.get(link)
-    soup = BeautifulSoup(html.text, "html.parser")
-    for id in soup.select('meta[property="og:url"]'):
-        parts = id['content'].split('/')
-        id = parts[-1]
-        return id
+    html = http_get(link)
+    soup = BeautifulSoup(html, "html.parser")
+
+    for id in soup.select("div#questions-container > ul"):
+        return id.attrs["data-step-id"]
 
 
 def removeReservedChars(value):
@@ -81,13 +118,16 @@ def getSubtitles(id, name):
     Subtitle is located at https://teamtreehouse.com/videos/{id}}/captions
     """
     subtitlesLink = 'https://teamtreehouse.com/videos/{}/captions'.format(id)
+    
     response = requests.get(subtitlesLink)
     if response.status_code == 200:
         contentDisposition = response.headers['Content-Disposition']
         parts = contentDisposition.split('"')
+        
         filename = removeReservedChars(parts[-2])
         title = '{}-{}'.format(name, filename)
         content = response.text
+        
         with open(title, 'w') as f:
             f.write(content)
         return 0
@@ -149,6 +189,8 @@ def getLinkWorkshop(link):
 
 
 for link in open('links.txt'):
+    sess = do_auth(USERNAME, PASSWORD)
+
     try:
         link = link.strip()
         print('Downloading: {}'.format(link))
@@ -161,10 +203,10 @@ for link in open('links.txt'):
         title = parts[-1]
         move_to_course_directory(title)
 
-        for video in videos:
 
-            html = requests.get(video, auth=(USERNAME, PASSWORD))
-            soup = BeautifulSoup(html.text, "html.parser")
+        for video in videos:
+            html = http_get(video)
+            soup = BeautifulSoup(html, "html.parser")
 
             # Extract title for filename
             h1 = soup.h1.contents[0]
@@ -179,9 +221,9 @@ for link in open('links.txt'):
 
             # Youtube-dl options
             options = {
-                'outtmpl': output,
-                'external_downloader': EXTERNAL_DL
-                # ,'verbose': True
+                'outtmpl': output
+                ,'external_downloader': EXTERNAL_DL
+                #,'verbose': True
             }
 
             with youtube_dl.YoutubeDL(options) as ydl:
@@ -200,3 +242,4 @@ for link in open('links.txt'):
         log.write(link)
         log.write('\n')
         log.close()
+        
