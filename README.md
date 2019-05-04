@@ -78,3 +78,4 @@ You can upgrade `youtube-dl` with `sudo -H pip install --upgrade youtube-dl`
 Upgraded on 4 May with 2 functions from project https://github.com/dx0x58/Treehouse-dl
 
 Script was tested with the `youtube-dl 2019.4.30` and `Python 3.6.7`.
+
