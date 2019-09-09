@@ -27,13 +27,16 @@ USERNAME = 'your_username'
 PASSWORD = 'your_password'
 
 # Download subtitles of the videos - use 'True' to download subtitles
-SUBTITLES = False
+SUBTITLES = True
+
+# Download teachner's notes of the videos to html file - use 'True' to download
+TEACHER_NOTES = True
 
 # Download accelerator
 EXTERNAL_DL = 'aria2c'
 
 # Video format - webm or mp4
-VIDEO_FORMAT = 'webm'
+VIDEO_FORMAT = 'mp4'
 
 HOME_DIR = os.getcwd()
 
@@ -121,20 +124,29 @@ def getSubtitles(id, name):
     Subtitle is located at https://teamtreehouse.com/videos/{id}}/captions
     """
     subtitlesLink = 'https://teamtreehouse.com/videos/{}/captions'.format(id)
-
     response = requests.get(subtitlesLink)
     if response.status_code == 200:
         contentDisposition = response.headers['Content-Disposition']
         parts = contentDisposition.split('"')
-
         filename = removeReservedChars(parts[-2])
         title = '{}-{}'.format(name, filename)
         content = response.text
-
         with open(title, 'w') as f:
             f.write(content)
         return 0
 
+def getTeacherNotes(soup, name):
+    try: 
+        fullHtml = "<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"> \
+        <div class=\"grid-70 tablet-grid-65 videos-show\">" + \
+        soup.select("#video-meta")[0].prettify() + "</div>" + \
+        soup.select(".teachers-notes-container .grid-70")[0].prettify()
+        title = '{}{}'.format(name, ".html")
+        with open(title, 'w') as f:
+            f.write(fullHtml)
+        return 0
+    except Exception as e:
+        print(e)
 
 def getVideoFormat():
     """ Validate video format or return default format
@@ -236,6 +248,11 @@ for link in open('links.txt'):
                     info = ydl.extract_info(videolink, download=False)
                     name = info.get('title', None)
                     subs = getSubtitles(ID, name)
+
+                if (TEACHER_NOTES):
+                    info = ydl.extract_info(videolink, download=False)
+                    name = info.get('title', None)
+                    notes = getTeacherNotes(soup, name + removeReservedChars(h1))
 
     except:
         os.chdir(HOME_DIR)
