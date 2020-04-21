@@ -25,8 +25,8 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import youtube_dl
 
-USERNAME = ''
-PASSWORD = ''
+USERNAME = 'your_username'
+PASSWORD = 'your_password'
 
 # Download subtitles of the videos - use 'True' to download subtitles
 SUBTITLES = True
@@ -45,8 +45,9 @@ def do_auth(user, pwd):
     Source: https://github.com/dx0x58/Treehouse-dl
     """
     sess = requests.Session()
-
-    login_page = sess.get('https://teamtreehouse.com/signin')
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+    login_page = sess.get('https://teamtreehouse.com/signin', headers=headers)
     login_page_soup = BeautifulSoup(login_page.text, "html.parser")
 
     token_val = login_page_soup.find(
@@ -184,7 +185,7 @@ def getLinksWorkshop(link):
     for a in soup.select('li.workshop-video a[href^="/library/"]'):
         vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
         videos.append(vidLink)
-    return dict('': videos)
+    return {'': videos}
 
 
 def getLinkWorkshop(link):
@@ -198,7 +199,7 @@ def getLinkWorkshop(link):
     for a in soup.select('a#workshop-hero'):
         vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
         videos.append(vidLink)
-    return dict('': videos)
+    return {'': videos}
 
 
 for link in open('links.txt'):
