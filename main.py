@@ -18,16 +18,18 @@ If download fails, the link will be saved in log.txt
 
 import os
 import re
+import sys
 import requests
-
+from os import chdir
+from pathlib import Path
 from bs4 import BeautifulSoup
 import youtube_dl
 
-USERNAME = 'your_username'
-PASSWORD = 'your_password'
+USERNAME = ''
+PASSWORD = ''
 
 # Download subtitles of the videos - use 'True' to download subtitles
-SUBTITLES = False
+SUBTITLES = True
 
 # Download accelerator
 EXTERNAL_DL = 'aria2c'
@@ -35,7 +37,7 @@ EXTERNAL_DL = 'aria2c'
 # Video format - webm or mp4
 VIDEO_FORMAT = 'webm'
 
-HOME_DIR = os.getcwd()
+HOME_DIR = Path.cwd()
 
 
 def do_auth(user, pwd):
@@ -79,25 +81,28 @@ def http_get(url):
     return resp.text
 
 
-def move_to_course_directory(title):
+def move_to_directory(PARENT_DIR, title):
     """Check if current directory is home directory. If not, change to it.
     Make a course directory and move to it.
     If course directory already exists, just move to it.
     If everything fails break the program.
     """
 
+    DIR = PARENT_DIR / title
+
     # Move to home directory if we are somewhere else (e.g. course subdir)
-    if os.getcwd() != HOME_DIR:
-        os.chdir(HOME_DIR)
+    if Path.cwd() != PARENT_DIR:
+        chdir(PARENT_DIR)
+
     try:
         # Make a directory with course name
-        os.mkdir(title)
-        os.chdir(title)
+        DIR.mkdir()
+        chdir(DIR)
     except FileExistsError:
-        # Position yourself in course directory
-        os.chdir(title)
+        # Position yourself in course or module directory
+        chdir(DIR)
     except:
-        print('Could not create subdirectory for the course: {}'.format(title))
+        print('Could not create subdirectory for the course or module: {}'.format(title))
 
 
 def getID(link):
@@ -155,11 +160,16 @@ def getLinksCourse(link):
     soup = BeautifulSoup(html.text, "html.parser")
 
     # Find all urls of the videos (ignore reviews and questions)
-    videos = []
-    for a in soup.select('a[href^="/library/"]'):
-        if (a.select('.video-22-icon')):  # if video icon is there
-            videoLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
-            videos.append(videoLink)
+    videos = dict()
+    mod_num = 0
+    modules = soup.find_all('div', class_='featurette')
+    for module in modules:
+        # RETURNS A DICT
+        mod_title = "{}. {}".format(mod_num, module.find('h2').text.strip())
+        videos[mod_title] = ['{}{}'.format('https://teamtreehouse.com', video.find('a')['href'])
+                             for video in module.find_all('li') if video.select('.video-22-icon')]
+        mod_num = mod_num + 1
+
     return videos
 
 
@@ -174,7 +184,7 @@ def getLinksWorkshop(link):
     for a in soup.select('li.workshop-video a[href^="/library/"]'):
         vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
         videos.append(vidLink)
-    return videos
+    return dict('': videos)
 
 
 def getLinkWorkshop(link):
@@ -188,7 +198,7 @@ def getLinkWorkshop(link):
     for a in soup.select('a#workshop-hero'):
         vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
         videos.append(vidLink)
-    return videos
+    return dict('': videos)
 
 
 for link in open('links.txt'):
@@ -204,38 +214,43 @@ for link in open('links.txt'):
         # Generate folder name and move to it
         parts = link.split('/')
         title = parts[-1]
-        move_to_course_directory(title)
+        move_to_directory(HOME_DIR, title)
 
-        for video in videos:
-            html = http_get(video)
-            soup = BeautifulSoup(html, "html.parser")
+        for module_title, vid in videos.items():
+            # create a DIR for module_title and move to it
+            if module_title:
+                move_to_directory(HOME_DIR / title, module_title)
 
-            # Extract title for filename
-            h1 = soup.h1.contents[0]
+            for video in vid:
+                html = http_get(video)
+                soup = BeautifulSoup(html, "html.parser")
 
-            # Output with the title of the video
-            output = u'%(id)s-' + removeReservedChars(h1) + u'.%(ext)s'
+                # Extract title for filename
+                h1 = soup.h1.contents[0]
 
-            # Video source link
-            tag = soup.video
-            videolink = tag.find_all(
-                type="video/{}".format(getVideoFormat()))[0].get('src')
+                # Output with the title of the video
+                output = '%(id)s-' + removeReservedChars(h1) + '.%(ext)s'
 
-            # Youtube-dl options
-            options = {
-                'outtmpl': output, 'external_downloader': EXTERNAL_DL
-                # ,'verbose': True
-            }
+                # Video source link
+                tag = soup.video
+                videolink = tag.find_all(
+                    type="video/{}".format(getVideoFormat()))[0].get('src')
 
-            with youtube_dl.YoutubeDL(options) as ydl:
+                # Youtube-dl options
+                options = {
+                    'outtmpl': output, 'external_downloader': EXTERNAL_DL
+                    # ,'verbose': True
+                }
 
-                ydl.download([videolink])
+                with youtube_dl.YoutubeDL(options) as ydl:
 
-                if (SUBTITLES):
-                    ID = getID(video)
-                    info = ydl.extract_info(videolink, download=False)
-                    name = info.get('title', None)
-                    subs = getSubtitles(ID, name)
+                    ydl.download([videolink])
+
+                    if (SUBTITLES):
+                        ID = getID(video)
+                        info = ydl.extract_info(videolink, download=False)
+                        name = info.get('title', None)
+                        subs = getSubtitles(ID, name)
 
     except:
         os.chdir(HOME_DIR)
