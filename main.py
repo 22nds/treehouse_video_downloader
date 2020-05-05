@@ -181,11 +181,13 @@ def getLinksWorkshop(link):
     soup = BeautifulSoup(html.text, "html.parser")
 
     # Find all urls of the videos
-    videos = []
-    for a in soup.select('li.workshop-video a[href^="/library/"]'):
-        vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
-        videos.append(vidLink)
-    return {'': videos}
+    videos = dict()
+    work_title = soup.find('h1').getText()
+
+    if '{}{}'.format('https://teamtreehouse.com', a['href']):
+        videos[work_title] = ['{}{}'.format('https://teamtreehouse.com', a['href'])
+                              for a in soup.select('li.workshop-video a[href^="/library/"]')]
+    return videos
 
 
 def getLinkWorkshop(link):
@@ -195,11 +197,12 @@ def getLinkWorkshop(link):
     soup = BeautifulSoup(html.text, "html.parser")
 
     # Find all urls of the videos
-    videos = []
-    for a in soup.select('a#workshop-hero'):
-        vidLink = '{}{}'.format('https://teamtreehouse.com', a['href'])
-        videos.append(vidLink)
-    return {'': videos}
+    videos = dict()
+    work_title = soup.find('h1').getText()
+    if soup.select('a#workshop-hero'):
+        videos[work_title] = ['{}{}'.format('https://teamtreehouse.com', a['href'])
+                              for a in soup.select('a#workshop-hero')]
+    return videos
 
 
 for link in open('links.txt'):
