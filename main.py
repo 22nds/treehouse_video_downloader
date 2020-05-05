@@ -184,7 +184,7 @@ def getLinksWorkshop(link):
     videos = dict()
     work_title = soup.find('h1').getText()
 
-    if '{}{}'.format('https://teamtreehouse.com', a['href']):
+    if soup.select('li.workshop-video a[href^="/library/"]'):
         videos[work_title] = ['{}{}'.format('https://teamtreehouse.com', a['href'])
                               for a in soup.select('li.workshop-video a[href^="/library/"]')]
     return videos
